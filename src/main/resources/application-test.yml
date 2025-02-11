@@ -24,6 +24,12 @@ logging:
 
 carelink:
   control:
-    jwtSecret: t/NSdehv9mugwWCkz8q8cu7T/cofvsAZHcBueBvrArY=
-    jwtAccessExpiration: 1800000
-    jwtRefreshExpiration: 36000000
+    jwtSecret: ${JWT_SECRET}
+    jwtAccessExpiration: ${JWT_ACCESS_EXPIRATION}
+    jwtRefreshExpiration: ${JWT_REFRESH_EXPIRATION}
+
+s3:
+  accessKey: ${S3_ACCESS_KEY}
+  secretKey: ${S3_SECRET_KEY}
+  region: ${S3_REGION}
+  bucketName: ${S3_BUCKET_NAME}
