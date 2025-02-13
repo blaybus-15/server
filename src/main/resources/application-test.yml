@@ -35,3 +35,9 @@ s3:
   secretKey: test
   region: test
   bucketName: test
+
+sms:
+  apiKey: test
+  apiSecretKey: test
+  apiHost: test
+  fromPhoneNumber: test

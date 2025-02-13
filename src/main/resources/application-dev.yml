@@ -42,3 +42,9 @@ s3:
   secretKey: ${S3_SECRET_KEY}
   region: ${S3_REGION}
   bucketName: ${S3_BUCKET_NAME}
+
+sms:
+  apiKey: ${SMS_API_KEY}
+  apiSecretKey: ${SMS_API_SECRET_KEY}
+  apiHost: https://api.coolsms.co.kr
+  fromPhoneNumber: ${SMS_FROM_PHONE_NUMBER}
