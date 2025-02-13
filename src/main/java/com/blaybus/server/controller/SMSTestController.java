@@ -16,10 +16,15 @@ public class SMSTestController {
 
     private final SMSService smsService;
 
+    public static class SMSRequest {
+        public String phoneNumber;
+        public String message;
+    }
+
     @PostMapping("/send")
-    public ResponseEntity<String> sendSMS(@RequestParam String phoneNumber, @RequestParam String message) {
+    public ResponseEntity<String> sendSMS(@RequestBody SMSRequest request) {
         try {
-            smsService.sendSMS(phoneNumber, message);
+            smsService.sendSMS(request.phoneNumber, request.message);
             return ResponseEntity.ok("SMS 전송 성공");
         } catch (Exception e) {
             log.error("SMS 전송 실패: ", e);

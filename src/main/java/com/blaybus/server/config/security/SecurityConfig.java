@@ -26,6 +26,7 @@ public class SecurityConfig {
             /** @brief Swagger Docs*/"/v3/api-docs/**", "/swagger-ui/**",
             /** @brief Retrieve status*/ "/status/all",
             /** @brief auth */"/auth/**",
+            /** @brief auth */"/test/**",
     };
     /* Admin 접근 권한 */
     private static final String[] permitAdminUrl = new String[]{
