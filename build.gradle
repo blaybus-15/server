@@ -57,6 +57,12 @@ dependencies {
 
 	// SMS
 	implementation 'net.nurigo:sdk:4.3.2'
+
+	// Webflux
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+	// thymeleaf
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 }
 
 tasks.named('test') {

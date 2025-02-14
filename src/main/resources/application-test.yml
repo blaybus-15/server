@@ -39,5 +39,5 @@ s3:
 sms:
   apiKey: test
   apiSecretKey: test
-  apiHost: test
+  apiHost: http://test
   fromPhoneNumber: test
