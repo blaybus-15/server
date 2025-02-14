@@ -1,10 +1,7 @@
 package com.blaybus.server.config.security;
 
 import com.blaybus.server.config.security.jwt.JwtRequestFilter;
-import com.blaybus.server.handler.OAuth2AuthenticationFailureHandler;
-import com.blaybus.server.handler.OAuth2AuthenticationSuccessHandler;
-import com.blaybus.server.repository.HttpCookieOAuth2AuthorizationRequestRepository;
-import com.blaybus.server.service.CustomOAuth2UserService;
+import com.blaybus.server.service.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,9 +13,6 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
-import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -33,7 +27,6 @@ public class SecurityConfig {
             /** @brief Retrieve status*/ "/status/all",
             /** @brief auth */"/auth/**",
             /** @brief auth */"/test/**",
-            /** @brief auth */"/login/**", "/oauth2/**"
     };
     /* Admin 접근 권한 */
     private static final String[] permitAdminUrl = new String[]{
@@ -45,10 +38,6 @@ public class SecurityConfig {
 
     private final JwtRequestFilter filter;
     private final WebConfig webConfig;
-    private final CustomOAuth2UserService customOAuth2UserService;
-    private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
-    private final OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
-    private final HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -62,12 +51,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public OAuth2UserService<OAuth2UserRequest, OAuth2User> customOAuth2UserServiceBean() {
-        return new CustomOAuth2UserService();
-    }
-
-    @Bean
-    public SecurityFilterChain web(HttpSecurity http, SecurityFilterChain oauth2SecurityFilterChain) throws Exception {
+    public SecurityFilterChain web(HttpSecurity http) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement((sessionManagement) ->
@@ -80,12 +64,6 @@ public class SecurityConfig {
                     auth.anyRequest()
                             .authenticated();
                 })
-                .oauth2Login(configure ->
-                        configure.authorizationEndpoint(config -> config.authorizationRequestRepository(httpCookieOAuth2AuthorizationRequestRepository))
-                                .userInfoEndpoint(config -> config.userService(customOAuth2UserService))
-                                .successHandler(oAuth2AuthenticationSuccessHandler)
-                                .failureHandler(oAuth2AuthenticationFailureHandler)
-                )
                 .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class)
                 .addFilter(webConfig.corsFilter())
                 .build();

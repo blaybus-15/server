@@ -18,29 +18,6 @@ spring:
         default_batch_fetch_size: 100
         jdbc:
           exception-handling: ignore
-  spring:
-    security:
-      oauth2:
-        client:
-          registration:
-            kakao:
-              client-id: ${KAKAO_CLIENT_ID}
-              client-secret: ${KAKAO_CLIENT_SECRET}
-              redirect-uri: http://localhost:8080/login/oauth2/code/kakao
-              authorization-grant-type: authorization_code
-              scope:
-                profile,
-                email,
-                nickname
-              client-name: Kakao
-
-          provider:
-            kakao:
-              authorization-uri: https://kauth.kakao.com/oauth/authorize
-              token-uri: https://kauth.kakao.com/oauth/token
-              user-info-uri: https://kapi.kakao.com/v2/user/me
-              user-info-authentication-method: header
-              user-name-attribute: id
 
 logging:
   level:
