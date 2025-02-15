@@ -62,12 +62,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public OAuth2UserService<OAuth2UserRequest, OAuth2User> customOAuth2UserServiceBean() {
-        return new CustomOAuth2UserService();
-    }
-
-    @Bean
-    public SecurityFilterChain web(HttpSecurity http, SecurityFilterChain oauth2SecurityFilterChain) throws Exception {
+    public SecurityFilterChain web(HttpSecurity http) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement((sessionManagement) ->

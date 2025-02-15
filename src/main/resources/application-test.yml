@@ -18,6 +18,28 @@ spring:
         default_batch_fetch_size: 100
         jdbc:
           exception-handling: ignore
+  security:
+    oauth2:
+      client:
+        registration:
+          kakao:
+            client-id: test
+            client-secret: test
+            redirect-uri: http://localhost:8080/login/oauth2/code/kakao
+            authorization-grant-type: authorization_code
+            scope:
+              profile,
+              email,
+              nickname
+            client-name: Kakao
+
+        provider:
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize
+            token-uri: https://kauth.kakao.com/oauth/token
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+            user-info-authentication-method: header
+            user-name-attribute: id
 logging:
   level:
     root: info  # 전체 로그를 INFO, DEBUG, WARN 수준으로 설정
@@ -41,3 +63,4 @@ sms:
   apiSecretKey: test
   apiHost: http://test
   fromPhoneNumber: test
+
