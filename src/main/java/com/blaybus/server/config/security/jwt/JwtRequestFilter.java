@@ -29,6 +29,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         if (authHeader == null) {
             filterChain.doFilter(request, response);
         } else {
+            // logger.info(authHeader);
             String jwt = authHeader.split(" ")[1];
             Authentication authentication = jwtUtils.verifyAndGetAuthentication(jwt);
 

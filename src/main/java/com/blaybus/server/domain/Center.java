@@ -1,10 +1,13 @@
 package com.blaybus.server.domain;
 
+import com.blaybus.server.domain.senior.Senior;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Entity
 @Getter
@@ -33,6 +36,9 @@ public class Center {
 
     @Column(name = "center_rating")
     private double centerRating; // 선택 입력: 센터 등급
+
+    @OneToMany(mappedBy = "center")
+    private List<Senior> seniors; // 센터에 소속된 시니어들
 
     public static Center createCenter(String centerName,
                                       boolean hasBathVehicle,

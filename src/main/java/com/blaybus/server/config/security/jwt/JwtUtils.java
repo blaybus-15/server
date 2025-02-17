@@ -48,6 +48,8 @@ public class JwtUtils {
 
         return Jwts.builder()
                 .setSubject((userPrincipal.getUsername()))
+                // 추가로 id 클레임에 Member id 추가
+                .claim("id", userPrincipal.getId())
                 .claim("role", String.join(",", roles))
                 .setIssuedAt(new Date())
                 .setExpiration(new Date((new Date()).getTime() + jwtAccessExpiration))
@@ -86,6 +88,16 @@ public class JwtUtils {
                 .getBody();
 
         return claims.getSubject();
+    }
+
+    public String getMemberIdByToken(String refreshToken) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(refreshToken)
+                .getBody();
+        Object idObj = claims.get("id");
+        return idObj.toString();
     }
 
     public String generateRefreshToken(Authentication authentication) {
