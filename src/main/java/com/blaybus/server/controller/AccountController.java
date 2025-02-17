@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @RestController
@@ -41,16 +42,21 @@ public class AccountController {
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping("/sign-up/member")
+    /**
+     * 내 정보 수정 (요양보호사)
+     * JSON과 프로필 사진 파일을 함께 받음.
+     */
+    @PutMapping(value = "/sign-up/member", consumes = {"multipart/form-data"})
     @Operation(summary = "Update Member Info")
-    public ResponseEntity<ResponseFormat<Long>> signUpMember(@RequestBody @Valid CareGiverRequest careGiverRequest) {
-        log.info("CareGiver created");
-        Long createdEmail = accountService.updateCareGiver(careGiverRequest);
+    public ResponseEntity<ResponseFormat<Long>> signUpMember(
+            @RequestPart("careGiverRequest") @Valid CareGiverRequest careGiverRequest,
+            @RequestPart(value = "profilePicture", required = false) MultipartFile profilePicture) {
+        Long createdId = accountService.updateCareGiver(careGiverRequest, profilePicture);
 
         ResponseFormat<Long> response = new ResponseFormat<>(
                 HttpStatus.OK.value(),
-                "멤버의 프로필이 성공적으로 등록되었습니다. (email: " + createdEmail + ")",
-                createdEmail
+                "멤버의 프로필이 성공적으로 등록되었습니다. (id: " + createdId + ")",
+                createdId
         );
 
         return ResponseEntity.ok(response);

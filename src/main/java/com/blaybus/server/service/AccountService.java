@@ -21,6 +21,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -37,6 +38,7 @@ public class AccountService {
     private final AuthenticationManager authenticationManager;
     private final MemberRepository memberRepository;
     private final CenterRepository centerRepository;
+    private final S3Service s3Service;
 
     public Long joinMember(SignUpRequest signUpRequest) {
         log.info("join Member: {}", signUpRequest.getEmail());
@@ -52,20 +54,29 @@ public class AccountService {
         return newMember.getId();
     }
 
-    public Long updateCareGiver(CareGiverRequest request) {
-        log.info("join Member: {}", request.getEmail());
-
+    /**
+     * 요양보호사 정보 수정 (업데이트)
+     * 프로필 사진 파일이 있으면 S3에 업로드 후 URL 업데이트
+     */
+    public Long updateCareGiver(CareGiverRequest request, MultipartFile profilePicture) {
+        log.info("Updating CareGiver info for email: {}", request.getEmail());
         CareGiver careGiver = (CareGiver) memberRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new CareLinkException(ErrorCode.USER_NOT_FOUND));
 
         validateCareGiverRequest(request);
 
-        careGiver.updateCareGiverInfo(request);
+        if (profilePicture != null && !profilePicture.isEmpty()) {
+            String profileUrl = s3Service.uploadFile(profilePicture);
+            log.info("profile url: {}", profileUrl);
+            careGiver.updateCareGiverInfo(request, profileUrl);
+        } else {
+            careGiver.updateCareGiverInfo(request);
+            log.info("no profile picture");
+        }
+
 
         memberRepository.save(careGiver);
-
-        log.info("Successfully join Member: {}", careGiver.getEmail());
-
+        log.info("Successfully updated CareGiver: {}", careGiver.getEmail());
         return careGiver.getId();
     }
 

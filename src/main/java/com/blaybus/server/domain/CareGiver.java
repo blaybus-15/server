@@ -114,6 +114,25 @@ public class CareGiver extends Member {
         this.accountName = request.getAccountName();
     }
 
+    public void updateCareGiverInfo(CareGiverRequest request, String profilePictureUrl) {
+        this.certificateNumber = request.getContactNumber();
+        this.careGiverType = request.getCareGiverType();
+        this.address = request.getAddress();
+        this.hasVehicle = request.isHasVehicle();
+        this.completedDementiaTraining = request.isCompletedDementiaTraining();
+        this.contactNumber = request.getContactNumber();
+        this.kind = request.getKind();
+        this.experience = getCareerDuration(request.getCertificatedAt(), request.getEndCertificatedAt());
+        this.majorExperience = request.getMajorExperience();
+        this.introduction = request.getIntroduction();
+        this.hourPay = request.getHourPay();
+        this.bank = request.getBank();
+        this.account = request.getAccount();
+        this.accountName = request.getAccountName();
+        // 추가: 전달받은 profilePictureUrl로 프로필 사진 업데이트
+        this.profilePictureUrl = profilePictureUrl;
+    }
+
     /**
      * 근무 시작 시 호출하는 메서드
      */

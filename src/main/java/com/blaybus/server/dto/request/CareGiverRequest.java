@@ -37,7 +37,6 @@ public class CareGiverRequest {
     private String contactNumber;
 
     private List<String> kind; // 선생님을 나타낼 수 있는 단어
-    private String profilePictureUrl; // 프로필 사진
     private String majorExperience; // 신입 경력
     private LocalDate certificatedAt; // 시작 경력
     private LocalDate endCertificatedAt; // 마지막 경력
