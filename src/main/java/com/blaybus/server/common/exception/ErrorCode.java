@@ -24,6 +24,7 @@ public enum ErrorCode {
     NOT_ADMIN(HttpStatus.BAD_REQUEST, "해당 회원은 어드민이 아닙니다."),
     INVALID_ADMIN_IDENTIFIER(HttpStatus.BAD_REQUEST, "유효하지 않은 admin 식별자입니다."),
     INVALID_CENTER_NAME(HttpStatus.BAD_REQUEST, "센터 이름이 적절하지 않습니다."),
+    INVALID_RESPONSE_STATUS_TYPE(HttpStatus.BAD_REQUEST, "유효하지 않은 응답 타입입니다."),
 
 
     NO_ADDRESS(HttpStatus.BAD_REQUEST, "주소에 동(洞) 정보가 포함되지 않았습니다."),
@@ -32,6 +33,7 @@ public enum ErrorCode {
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "등록되지 않은 유저입니다."),
     CENTER_NOT_FOUND(HttpStatus.NOT_FOUND, "등록되지 않은 센터입니다."),
     SENIOR_NOT_FOUND(HttpStatus.NOT_FOUND, "등록되지 않은 어르신입니다."),
+    MATCHING_NOT_FOUND(HttpStatus.NOT_FOUND, "매칭이 존재하지 않습니다."),
 
     // 409 Conflict,
     USER_ALREADY_EXISTS(HttpStatus.CONFLICT, "중복된 유저입니다.");

@@ -33,7 +33,7 @@ public class SeniorResponse {
     private Set<MedicalCondition> medicalConditions;
     private Set<RequiredService> requiredServices;
     private String additionalNotes;
-    private Center center;
+    private Long centerId;
 
     public static SeniorResponse from(Senior senior) {
         return SeniorResponse.builder()
@@ -56,7 +56,7 @@ public class SeniorResponse {
                 .medicalConditions(senior.getMedicalConditions())
                 .requiredServices(senior.getRequiredServices())
                 .additionalNotes(senior.getAdditionalNotes())
-                .center(senior.getCenter())
+                .centerId(senior.getCenter().getId())
                 .build();
     }
 }
