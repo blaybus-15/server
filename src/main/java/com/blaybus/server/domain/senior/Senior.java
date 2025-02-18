@@ -5,16 +5,20 @@ import com.blaybus.server.common.exception.ErrorCode;
 import com.blaybus.server.domain.Center;
 import com.blaybus.server.domain.Day;
 import com.blaybus.server.domain.auth.GenderType;
+import com.blaybus.server.domain.journal.CareJournal;
 import com.blaybus.server.dto.request.SeniorRequest;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -95,6 +99,11 @@ public class Senior {
     @ManyToOne
     @JoinColumn(name = "center_id", nullable = false)
     private Center center; // 시니어가 속한 센터
+
+    // 효주 추가
+    @OneToMany(mappedBy = "senior", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<CareJournal> careJournals;
+    // 효주 추가 끝
 
     @PrePersist
     @PreUpdate

@@ -9,6 +9,7 @@ import java.util.Set;
 @Inheritance(strategy = InheritanceType.JOINED)
 @Entity
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

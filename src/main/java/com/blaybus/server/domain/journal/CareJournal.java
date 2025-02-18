@@ -1,7 +1,12 @@
 package com.blaybus.server.domain.journal;
 
+import com.blaybus.server.domain.senior.Senior;
+import com.blaybus.server.domain.auth.CareGiver;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -16,8 +21,28 @@ public class CareJournal {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "member_id", nullable = false)
-    private Long memberId;
+    @ManyToOne
+    @JoinColumn(name = "senior_id", nullable = false)
+    private Senior senior;
+
+    @ManyToOne
+    @JoinColumn(name = "care_giver_id", nullable = false)
+    private CareGiver careGiver;
+
+    @Column(name = "care_giver_name", nullable = false)
+    private String careGiverName;
+
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
+
+    @Column(name = "senior_birthday", nullable = false)
+    private LocalDate seniorBirthday;
+
+    @Column(name = "senior_gender", nullable = false)
+    private String seniorGender;
+
+    @Column(name = "senior_care_level", nullable = false)
+    private String seniorCareLevel;
 
     @OneToOne(mappedBy = "careJournal", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private HealthJournal healthJournal;

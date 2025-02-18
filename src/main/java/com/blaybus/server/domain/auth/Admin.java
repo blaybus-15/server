@@ -43,12 +43,12 @@ public class Admin extends Member {
     }
 
     // TODO: 비밀번호 확인.
-    public void updateAdmin(Center center, AdminUpdateRequest request) {
-
+    public void updateAdmin(Center center, AdminUpdateRequest request, String profilePictureUrl) {
+        this.name = request.getName();
         this.center = center;
         this.contactNumber = request.getContactNumber();
         this.introduction = request.getIntroduction();
-        this.profilePictureUrl = request.getProfilePictureUrl();
+        this.profilePictureUrl = profilePictureUrl;
     }
 
     public void saveBySocial(Center center, String name, String contactNumber, String introduction, String profilePictureUrl) {

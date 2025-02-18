@@ -1,92 +1,119 @@
 package com.blaybus.server.controller;
 
 import com.blaybus.server.domain.journal.CareJournal;
+import com.blaybus.server.dto.ResponseFormat;
 import com.blaybus.server.dto.request.CareJournalRequest;
+import com.blaybus.server.dto.request.CareJournalSearchRequest;
+import com.blaybus.server.dto.response.CareJournalResponse;
 import com.blaybus.server.service.CareJournalService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 @RestController
-@RequestMapping("/api/care-journal")
+@RequestMapping("/api/seniors/{seniorId}/care-journals")
 @RequiredArgsConstructor
+@Tag(name = "CareJournalController", description = "케어일지 관련 API")
 public class CareJournalController {
 
     private final CareJournalService careJournalService;
 
-    // 케어일지 생성
-    @Operation(summary = "케어일지 생성", description = "새로운 케어일지를 생성합니다.")
-    @ApiResponse(responseCode = "200", description = "케어일지 생성 성공")
     @PostMapping
-    public ResponseEntity<CareJournal> createCareJournal(@RequestBody CareJournalRequest request) {
-        CareJournal careJournal = careJournalService.createCareJournal(request);
-        return ResponseEntity.ok(careJournal);
-    }
-
-    // 멤버 ID와 케어일지 ID로 케어일지 조회
-    @Operation(summary = "특정 멤버의 케어일지 조회", description = "멤버 ID와 케어일지 ID를 통해 특정 케어일지를 조회합니다.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "조회 성공"),
-            @ApiResponse(responseCode = "404", description = "케어일지를 찾을 수 없음")
-    })
-    @GetMapping("/member/{memberId}/care-journal/{careJournalId}")
-    public ResponseEntity<CareJournal> getCareJournalByMemberIdAndCareJournalId(
-            @Parameter(description = "회원 ID") @PathVariable Long memberId,
-            @Parameter(description = "케어일지 ID") @PathVariable Long careJournalId) {
-        return careJournalService.getCareJournalByMemberIdAndCareJournalId(memberId, careJournalId)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
-    }
-
-    // 케어일지 단건 조회
-    @Operation(summary = "케어일지 단건 조회", description = "케어일지 ID를 통해 특정 케어일지를 조회합니다.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "조회 성공"),
-            @ApiResponse(responseCode = "404", description = "케어일지를 찾을 수 없음")
-    })
-    @GetMapping("/{id}")
-    public ResponseEntity<CareJournal> getCareJournalById(
-            @Parameter(description = "케어일지 ID") @PathVariable Long id) {
-        return careJournalService.getCareJournalById(id)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
-    }
-
-    // 케어일지 업데이트
-    @Operation(summary = "케어일지 업데이트", description = "기존의 케어일지를 업데이트합니다.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "업데이트 성공"),
-            @ApiResponse(responseCode = "404", description = "케어일지를 찾을 수 없음")
-    })
-    @PutMapping("/{id}")
-    public ResponseEntity<CareJournal> updateCareJournal(
-            @Parameter(description = "케어일지 ID") @PathVariable Long id,
+    @Operation(summary = "케어일지 생성", description = "새로운 케어일지를 생성합니다.")
+    public ResponseEntity<ResponseFormat<CareJournalResponse>> createCareJournal(
+            @PathVariable Long seniorId,
             @RequestBody CareJournalRequest request) {
-        if (careJournalService.getCareJournalById(id).isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-        CareJournal updatedCareJournal = careJournalService.updateCareJournal(id, request);
-        return ResponseEntity.ok(updatedCareJournal);
+        CareJournal careJournal = careJournalService.createCareJournal(seniorId, request);
+        CareJournalResponse response = CareJournalResponse.fromEntity(careJournal);
+        ResponseFormat<CareJournalResponse> responseFormat = new ResponseFormat<>(
+                HttpStatus.OK.value(),
+                "케어일지가 생성되었습니다.",
+                response
+        );
+        return ResponseEntity.ok(responseFormat);
     }
 
-    // 케어일지 삭제
-    @Operation(summary = "케어일지 삭제", description = "케어일지를 삭제합니다.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "삭제 성공"),
-            @ApiResponse(responseCode = "404", description = "케어일지를 찾을 수 없음")
-    })
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCareJournal(
-            @Parameter(description = "케어일지 ID") @PathVariable Long id) {
-        if (careJournalService.getCareJournalById(id).isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-        careJournalService.deleteCareJournal(id);
-        return ResponseEntity.noContent().build();
+    @GetMapping
+    @Operation(summary = "모든 케어일지 조회", description = "특정 시니어의 모든 케어일지를 조회합니다.")
+    public ResponseEntity<ResponseFormat<List<CareJournalResponse>>> getCareJournalsBySeniorId(
+            @PathVariable Long seniorId) {
+        List<CareJournal> careJournals = careJournalService.getCareJournalsBySeniorId(seniorId);
+        List<CareJournalResponse> responseList = careJournals.stream()
+                .map(CareJournalResponse::fromEntity)
+                .collect(Collectors.toList());
+        ResponseFormat<List<CareJournalResponse>> responseFormat = new ResponseFormat<>(
+                HttpStatus.OK.value(),
+                "해당 시니어의 케어일지가 조회되었습니다.",
+                responseList
+        );
+        return ResponseEntity.ok(responseFormat);
+    }
+
+    @GetMapping("/{careJournalId}")
+    @Operation(summary = "케어일지 조회", description = "특정 시니어의 특정 케어일지를 조회합니다.")
+    public ResponseEntity<ResponseFormat<Optional<CareJournalResponse>>> getCareJournalBySeniorIdAndJournalId(
+            @PathVariable Long seniorId,
+            @PathVariable Long careJournalId) {
+        Optional<CareJournal> careJournal = careJournalService.getCareJournalBySeniorIdAndJournalId(seniorId, careJournalId);
+        Optional<CareJournalResponse> response = careJournal.map(CareJournalResponse::fromEntity);
+        ResponseFormat<Optional<CareJournalResponse>> responseFormat = new ResponseFormat<>(
+                HttpStatus.OK.value(),
+                "케어일지가 조회되었습니다.",
+                response
+        );
+        return ResponseEntity.ok(responseFormat);
+    }
+
+    @PutMapping("/{careJournalId}")
+    @Operation(summary = "케어일지 수정", description = "특정 시니어의 특정 케어일지를 수정합니다.")
+    public ResponseEntity<ResponseFormat<CareJournalResponse>> updateCareJournal(
+            @PathVariable Long seniorId,
+            @PathVariable Long careJournalId,
+            @RequestBody CareJournalRequest request) {
+        CareJournal updatedCareJournal = careJournalService.updateCareJournal(seniorId, careJournalId, request);
+        CareJournalResponse response = CareJournalResponse.fromEntity(updatedCareJournal);
+        ResponseFormat<CareJournalResponse> responseFormat = new ResponseFormat<>(
+                HttpStatus.OK.value(),
+                "케어일지가 수정되었습니다.",
+                response
+        );
+        return ResponseEntity.ok(responseFormat);
+    }
+
+    @DeleteMapping("/{careJournalId}")
+    @Operation(summary = "케어일지 삭제", description = "특정 시니어의 특정 케어일지를 삭제합니다.")
+    public ResponseEntity<ResponseFormat<Void>> deleteCareJournal(
+            @PathVariable Long seniorId,
+            @PathVariable Long careJournalId) {
+        careJournalService.deleteCareJournal(seniorId, careJournalId);
+        ResponseFormat<Void> responseFormat = new ResponseFormat<>(
+                HttpStatus.NO_CONTENT.value(),
+                "케어일지가 삭제되었습니다.",
+                null
+        );
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(responseFormat);
+    }
+
+    /**
+     * 검색
+     */
+    @GetMapping("/search")
+    public ResponseEntity<ResponseFormat<List<CareJournal>>> getCareJournalBy(@ModelAttribute CareJournalSearchRequest careJournalSearchRequest) {
+        List<CareJournal> careJournals = careJournalService.searchCareJournal(careJournalSearchRequest);
+
+        ResponseFormat<List<CareJournal>> response = new ResponseFormat<>(
+                HttpStatus.OK.value(),
+                "케어일지가 검색되었습니다.",
+                careJournals
+        );
+
+        return ResponseEntity.ok(response);
     }
 }

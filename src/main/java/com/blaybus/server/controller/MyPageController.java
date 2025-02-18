@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @RestController
@@ -64,11 +65,12 @@ public class MyPageController {
     /**
      * 내 정보 수정(요양보호사)
      */
-    @PutMapping("/member/memberId")
+    @PutMapping("/member/{memberId}")
     public ResponseEntity<ResponseFormat<Long>> updateMember(@PathVariable Long memberId,
-                                                             @RequestBody MemberUpdateRequest memberUpdateRequest) {
+                                                             @RequestPart("memberUpdateRequest") MemberUpdateRequest memberUpdateRequest,
+                                                             @RequestPart(required = false) MultipartFile file) {
         log.info("memberId: {} 요양보호사 정보 수정", memberId);
-        Long updateId = myPageWriteService.updateMemberInfo(memberId, memberUpdateRequest);
+        Long updateId = myPageWriteService.updateMemberInfo(memberId, memberUpdateRequest, file);
 
         ResponseFormat<Long> responseFormat = new ResponseFormat<>(
                 HttpStatus.OK.value(),
@@ -84,9 +86,10 @@ public class MyPageController {
      */
     @PutMapping("/admin/{memberId}")
     public ResponseEntity<ResponseFormat<Long>> updateAdmin(@PathVariable Long memberId,
-                                                            @RequestBody AdminUpdateRequest adminUpdateRequest) {
+                                                            @RequestPart("adminUpdateRequest") AdminUpdateRequest adminUpdateRequest,
+                                                            @RequestPart(required = false) MultipartFile file) {
         log.info("AdminId: {} 관리자 정보 수정", memberId);
-        Long updateId = myPageWriteService.updateAdminInfo(memberId, adminUpdateRequest);
+        Long updateId = myPageWriteService.updateAdminInfo(memberId, adminUpdateRequest, file);
 
         ResponseFormat<Long> responseFormat = new ResponseFormat<>(
                 HttpStatus.OK.value(),

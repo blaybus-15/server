@@ -1,5 +1,6 @@
 package com.blaybus.server.domain.auth;
 
+import com.blaybus.server.domain.journal.CareJournal;
 import com.blaybus.server.dto.request.CareGiverRequest;
 import com.blaybus.server.dto.request.MyPageRequest.MemberUpdateRequest;
 import jakarta.persistence.*;
@@ -85,6 +86,15 @@ public class CareGiver extends Member {
     @Column(name = "work_start_date")
     private LocalDate workStartDate; // 현재 근무 시작 날짜
 
+    // 효주 추가
+    @OneToMany(mappedBy = "careGiver", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<CareJournal> careJournals;
+    // 효주 추가 끝
+
+    private int birthYear;
+    private int birthMonth;
+    private int birthDay;
+
     public CareGiver(String email, String password,
                      LoginType loginType, GenderType genderType, String name, String profilePictureUrl) {
         super(email, password, Set.of(MemberRole.CAREGIVER), loginType);
@@ -133,6 +143,48 @@ public class CareGiver extends Member {
 
         this.isWorking = false;
         this.workStartDate = null;
+    }
+
+    public void updateCareGiverInfo(MemberUpdateRequest request, List<Experience> experiences, String profilePictureUrl) {
+        this.name = request.getName();
+
+        this.birthYear = request.getYear();
+        this.birthMonth = request.getMonth();
+        this.birthDay = request.getDay();
+
+        this.contactNumber = request.getContactNumber();
+
+        this.genderType = request.getGenderType();
+
+        this.hasVehicle = request.isHasVehicle();
+
+        this.certificates.addAll(
+                request.getCertificates().stream()
+                        .map(cert -> new CareGiverCertificate(this, cert.getCareGiverType(), cert.getCertificatedNumber()))
+                        .collect(Collectors.toList())
+        );
+
+        this.completedDementiaTraining = request.isCompletedDementiaTraining();
+
+        this.streetAddress = request.getStreetAddress();
+        this.detailAddress = request.getDetailAddress();
+        this.region = extractRegionFromStreetAddress(request.getStreetAddress()); // 이건 내가 가공
+
+        this.hasVehicle = request.isHasVehicle();
+
+        this.kinds.addAll(request.getKinds());
+
+        this.experiences.clear();
+        this.experiences.addAll(experiences);
+        this.careerPeriod = getCareerDuration(this.experiences); // 이건 내가 가공
+
+        this.introduction = request.getIntroduction();
+
+        this.bank = request.getBank();
+        this.account = request.getAccount();
+        this.accountName = request.getAccountName();
+
+        this.profilePictureUrl = profilePictureUrl;
     }
 
     /**

@@ -1,12 +1,18 @@
 package com.blaybus.server.dto.request;
 
 import com.blaybus.server.domain.journal.*;
-import com.blaybus.server.domain.journal.*;
 import lombok.Getter;
+
+import java.time.LocalDate;
 
 @Getter
 public class CareJournalRequest {
-    private Long memberId;
+    private Long seniorId;
+    private Long careGiverId;
+    private String careGiverName;
+    private LocalDate seniorBirthday;
+    private String seniorGender;
+    private String seniorCareLevel;
 
     // 건강 페이지
     private Meal meal;
